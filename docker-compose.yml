@@ -1,0 +1,63 @@
+services:
+  rag-server:
+    container_name: rag-server
+    restart: always
+    build:
+      context: .
+    ports:
+      - "${APP_PORT}:8765"
+    image: cur-rag/rag-server
+    environment:
+      - APP_PORT=${APP_PORT}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - .:/app
+    networks:
+      - cru-rag-network
+
+  rag-embedder:
+    container_name: rag-embedder
+    restart: always
+    image: cru-rag/rag-embedder
+    environment:
+      - APP_PORT=${APP_PORT}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - .:/app
+    networks:
+      - cru-rag-network
+
+  weaviate:
+    container_name: weaviate
+    restart: always
+    image: semitechnologies/weaviate:latest
+    ports:
+      - "${WEAVIATE_PORT}:8080"
+      - 50051:50051
+    volumes:
+      - .data/weaviate:/var/lib/weaviate
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      DEFAULT_VECTORIZER_MODULE: 'text2vec-openai'
+      ENABLE_MODULES: 'text2vec-openai,generative-openai'
+      OPENAI_APIKEY: "${OPENAI_API_KEY}"
+      CLUSTER_HOSTNAME: 'node1'
+    networks:
+      - cru-rag-network
+
+  redis:
+    image: redis:latest
+    container_name: my-redis
+    restart: always
+    volumes:
+      - .data/redis:/data
+    networks:
+      - cru-rag-network
+
+networks:
+  cru-rag-network:
+    driver: bridge
