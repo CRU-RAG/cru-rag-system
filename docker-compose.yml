@@ -6,7 +6,6 @@ services:
       context: .
     ports:
       - "${APP_PORT}:8765"
-    image: cur-rag/rag-server
     environment:
       - APP_PORT=${APP_PORT}
       - GROQ_API_KEY=${GROQ_API_KEY}
@@ -19,7 +18,8 @@ services:
   rag-embedder:
     container_name: rag-embedder
     restart: always
-    image: cru-rag/rag-server
+    build:
+      context: .
     environment:
       - APP_PORT=${APP_PORT}
       - GROQ_API_KEY=${GROQ_API_KEY}
