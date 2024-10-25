@@ -1,0 +1,34 @@
+{
+  "classes": [
+    {
+      "class":  "CRURAG",
+      "description": "A class to store text data with vectors",
+      "vectorizer": "text2vec-openai",
+      "vectorIndexType": "hnsw",
+      "vectorIndexConfig": {
+        "vectorCacheMaxObjects": 1000000,
+        "distance": "cosine"
+      },
+      "properties": [
+        {
+          "name": "body",
+          "dataType": ["string"]
+        },
+        {
+          "name": "title",
+          "dataType": ["string"]
+        }
+      ],
+      "moduleConfig": {
+        "generative-openai": {
+          "model": "gpt-3.5-turbo",
+          "temperatureProperty": 0.9,
+          "maxTokensProperty": 1024,
+          "frequencyPenaltyProperty": 0,
+          "presencePenaltyProperty": 0,
+          "topPProperty": 1
+        }
+      }
+    }
+  ]
+}
