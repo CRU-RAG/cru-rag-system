@@ -19,7 +19,7 @@ services:
   rag-embedder:
     container_name: rag-embedder
     restart: always
-    image: cru-rag/rag-embedder
+    image: cru-rag/rag-server
     environment:
       - APP_PORT=${APP_PORT}
       - GROQ_API_KEY=${GROQ_API_KEY}
