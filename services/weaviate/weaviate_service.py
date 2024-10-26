@@ -1,6 +1,7 @@
 """
 Services related to weaviate vector database
 """
+
 import os
 import weaviate
 from utilities.file_utilities import load_json_from_file
@@ -10,6 +11,7 @@ class WeaviateService:
     """
     Weaviate service
     """
+
     def __init__(self):
         self.client = None
         self._init_schema()
@@ -49,7 +51,9 @@ class WeaviateService:
         :param body:
         :return:
         """
-        exists = self.client.data_object.exists(content_id, class_name=self.schema_class)
+        exists = self.client.data_object.exists(
+            content_id, class_name=self.schema_class
+        )
         data_object = {
             "body": body,
             "title": title,
@@ -82,3 +86,17 @@ class WeaviateService:
             .with_additional(["distance"])
             .do()
         )
+
+    def delete(self, content_id):
+        """ "
+        :param content_id:
+        :return:
+        """
+        self.client.data_object.delete(uuid=content_id, class_name=self.schema_class)
+
+    def item_exists(self, content_id):
+        """
+        :param content_id:
+        :return boolean:
+        """
+        return self.client.data_object.exists(content_id, class_name=self.schema_class)
