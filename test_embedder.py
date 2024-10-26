@@ -49,3 +49,9 @@ weaviate_service.insert_data(
 )
 
 print(weaviate_service.search("Gambella", max_distance=0.0, match_limit=1))
+
+print(weaviate_service.item_exists("6b987654-e321-4f00-9a95-f5d74b46900a"))
+
+print(weaviate_service.delete("6b987654-e321-4f00-9a95-f5d74b46900a"))
+
+print(weaviate_service.item_exists("6b987654-e321-4f00-9a95-f5d74b46900a"))
