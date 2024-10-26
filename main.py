@@ -1,5 +1,5 @@
 """
-Lucy
+CRURAG
 """
 
 import os
@@ -7,8 +7,16 @@ import asyncio
 from urllib.parse import urlparse, parse_qs
 import websockets
 from dotenv import load_dotenv
+from message.message_manager import MessageManager
+from services.openai.langchain_service import LangChainService
+from services.redis.redis_service import RedisService
+from services.weaviate.weaviate_service import WeaviateService
 
 load_dotenv(override=True)
+
+message_manager = MessageManager(
+    LangChainService(), RedisService(), WeaviateService()
+)
 
 
 async def echo(websocket, path):
@@ -20,7 +28,7 @@ async def echo(websocket, path):
     """
     chat_id = parse_qs(urlparse(path).query).get("id", [None])[0]
     async for message in websocket:
-        await websocket.send(message + chat_id)
+        await websocket.send(await message_manager.process_message(chat_id, message))
 
 
 async def main():
