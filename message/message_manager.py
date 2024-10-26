@@ -1,5 +1,5 @@
 """
-Gluon technology
+CRURAG
 """
 import logging
 import pickle

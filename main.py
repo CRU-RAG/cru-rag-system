@@ -1,5 +1,5 @@
 """
-Lucy
+CRURAG
 """
 
 import os
