@@ -61,3 +61,4 @@ urllib3==2.2.2
 weaviate-client==3.26.6
 websockets==12.0
 yarl==1.9.4
+python-telegram-bot
