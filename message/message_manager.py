@@ -12,24 +12,20 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 
-def init_messages(redis):
+def init_messages():
     """
 
     :return:
     """
-    system_personas = [persona for persona in redis.get_personas() if persona['type'] == 'SYSTEM']
-    other_personas = [persona for persona in redis.get_personas() if persona['type'] != 'SYSTEM']
-    system_message = ', '.join([persona['description'] for persona in system_personas])
-    persona_messages = [persona_message(persona) for persona in other_personas]
+    return [
+        SystemMessage(
+            content="You are helpful assistant. Know that your name is VerseWise, and your gender is female "
+                    "You are eternal being."
+                    "you know only about bible ."
+                    "Don't answer questions if it is not about Bible. "
+        ),
+    ]
 
-    return [SystemMessage(content=system_message)] + persona_messages
-
-
-def persona_message(persona):
-    if persona['type'] == 'HUMAN':
-        return HumanMessage(content=persona['description'])
-    elif persona['type'] == "AI":
-        return AIMessage(content=persona['description'])
 
 
 class MessageManager:
@@ -52,7 +48,7 @@ class MessageManager:
         """
         serialized_obj = self.redis.get_chat(chat_id)
         if serialized_obj is None:
-            chat_messages = init_messages(self.redis)
+            chat_messages = init_messages()
         else:
             chat_messages = pickle.loads(serialized_obj)
 
