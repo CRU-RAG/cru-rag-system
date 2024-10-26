@@ -30,6 +30,17 @@ services:
     networks:
       - cru-rag-network
 
+  telegram-bot:
+    container_name: telegram-bot
+    restart: always
+    build:
+      context: .
+    volumes:
+      - .:/app
+    command: python /app/bot.py
+    networks:
+      - cru-rag-network
+
   weaviate:
     container_name: weaviate
     restart: always
