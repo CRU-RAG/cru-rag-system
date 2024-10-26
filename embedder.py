@@ -23,9 +23,13 @@ def callback(ch, method, properties, body):
     """
     try:
         message = json.loads(body).get("data")
-        weaviate_service.insert_data(
-            message.get("id"), message.get("title"), message.get("body")
-        )
+        operation = message.get("op")
+        if operation in ("create", "update"):
+            weaviate_service.insert_data(
+                message.get("id"), message.get("title"), message.get("content")
+            )
+        else:
+            weaviate_service.delete(message.get("id"))
         print("Message processed:", message)
         ch.basic_ack(delivery_tag=method.delivery_tag)
     except Exception as e:
