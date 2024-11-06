@@ -1,6 +1,7 @@
 services:
   rag-server:
     container_name: rag-server
+    image: registry.digitalocean.com/agelgel/cru-rag-server:latest
     restart: always
     build:
       context: .

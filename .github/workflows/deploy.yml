@@ -1,0 +1,55 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  REGISTRY: registry.digitalocean.com/agelgel
+  IMAGE_NAME: cru-rag
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DO Container Registry
+        run: doctl registry login --expiry-seconds 600
+
+      - name: Build and push images
+        env:
+          COMPOSE_DOCKER_CLI_BUILD: 1
+          DOCKER_BUILDKIT: 1
+        run: |
+          docker-compose build
+          docker tag cru-rag_rag-server:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-server:latest
+          docker tag cru-rag_rag-embedder:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-embedder:latest
+          docker tag cru-rag_telegram-bot:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-bot:latest
+          
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-server:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-embedder:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-bot:latest
+
+      - name: Deploy to DigitalOcean Droplet
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /root/verse-wise
+            doctl registry login --expiry-seconds 600
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d
