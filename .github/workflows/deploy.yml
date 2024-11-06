@@ -48,7 +48,7 @@ jobs:
           username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /path/to/project
+            cd /root/verse-wise
             doctl registry login --expiry-seconds 600
             docker-compose pull
             docker-compose down
